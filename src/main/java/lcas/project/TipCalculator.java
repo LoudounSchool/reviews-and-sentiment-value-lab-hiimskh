@@ -1,3 +1,4 @@
+package lcas.project;
 import java.util.Scanner;
 
 public class TipCalculator {
