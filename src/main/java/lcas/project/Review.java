@@ -16,7 +16,7 @@ public class Review {
  
   
   //Update this with your Repository Name
-  private static final String ABSOLUTE_PATH = "/workspaces/REPOSITORY NAME/src/main/resources/";
+  private static final String ABSOLUTE_PATH = "/workspaces/reviews-and-sentiment-value-lab-hiimskh/src/main/resources/";
   
   static{
     try {
@@ -166,4 +166,104 @@ public class Review {
       return randomNegativeAdj();
     }
   }
+
+
+public static double totalSentiment(String fileName) {
+  String fileTxt = Review.textToString(fileName);
+  double totalSum = 0;
+
+  while(fileTxt.length() > 0) {
+    int spaceIndex = fileTxt.indexOf(" ");
+    String word;
+
+  if (spaceIndex > -1) {
+    word = fileTxt.substring(0, spaceIndex);
+    fileTxt = fileTxt.substring(spaceIndex + 1);
+  }
+    else {
+      word = fileTxt;
+      fileTxt = "";
+    }
+
+    word = Review.removePunctuation(word);
+
+    totalSum += Review.sentimentVal(word);
+
+    
+  }
+  return totalSum;
 }
+
+public static int starRating(String fileName) {
+  double totalSentiment = totalSentiment(fileName);
+
+  if (totalSentiment < -10) {
+    return 0;
+  }
+
+  else if (totalSentiment < 0) {
+    return 1;
+  }
+
+  else if (totalSentiment < 10) {
+    return 2;
+  }
+
+  else if (totalSentiment < 20) {
+    return 3;
+  }
+  else {
+    return 4;
+  }
+  }
+
+  public static String fakeReview(String fileName, boolean makePositive) {
+    String fileText = textToString(fileName);
+    String fake = "";
+    int astIndex = fileText.indexOf("*");
+
+    while (astIndex != -1) {
+      int nextSpace = fileText.indexOf(" ", astIndex);
+      fake += fileText.substring(0, astIndex);
+
+      String word;
+      if (nextSpace == -1) {
+        word = fileText.substring(astIndex + 1);
+        fileText = "";
+      }
+
+      else {
+        word = fileText.substring(astIndex+1, nextSpace);
+        fileText = fileText.substring(nextSpace+1);
+      }
+
+      String newWord;
+      if (makePositive) {
+        newWord = randomPositiveAdj();
+      }
+      else {
+        newWord = randomNegativeAdj();
+      }
+      
+      String punctuation = getPunctuation(word);
+      newWord += punctuation;
+
+      fake += newWord;
+      astIndex = fileText.indexOf("*");
+    }
+    fake += fileText;
+    return fake;
+  }
+
+public static void main(String[] args) {
+  double answer = Review.totalSentiment("SimpleReview.txt");
+  System.out.println("The total rating is "  + answer);
+  System.out.println("The star rating is " + Review.starRating("SimpleReview.txt"));
+  String posFake = Review.fakeReview("SimpleReview.txt", true);
+  System.out.println("Here is the positive revised review: \n" + posFake);
+  String negFake = Review.fakeReview("SimpleReview.txt", false);
+  System.out.println("Here is the negative revised review: \n" + negFake);
+}
+}
+
+
